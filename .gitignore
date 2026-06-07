@@ -1,0 +1,11 @@
+node_modules/
+.turbo/
+dist/
+.next/
+target/
+*.log
+.DS_Store
+bun.lockb
+
+.env
+.env*
