@@ -17,7 +17,8 @@ impl QuoteService {
     pub async fn create_quote(&self, quote: CreateQuote) -> mongodb::error::Result<Quote> {
         let new_quote = Quote {
             id: None,
-            ..quote.into()
+            text: quote.text,
+            author: quote.author,
         };
 
         let result = self.collection.insert_one(&new_quote).await?;

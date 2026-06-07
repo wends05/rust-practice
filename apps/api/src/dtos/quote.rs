@@ -8,16 +8,6 @@ pub struct CreateQuote {
     pub author: String,
 }
 
-impl From<CreateQuote> for Quote {
-    fn from(quote: CreateQuote) -> Self {
-        Self {
-            id: None,
-            text: quote.text,
-            author: quote.author,
-        }
-    }
-}
-
 #[derive(Debug, Serialize)]
 pub struct CreateQuoteResponse {
     pub id: String,

@@ -11,6 +11,8 @@ use std::{panic, sync::Arc};
 use axum::{Router, serve};
 use config::Config;
 use mongodb::Client;
+use tower_http::cors::{Any, CorsLayer};
+use axum::http::{HeaderValue, Method};
 
 #[tokio::main]
 async fn main() -> mongodb::error::Result<()> {
@@ -27,17 +29,23 @@ async fn main() -> mongodb::error::Result<()> {
     let app_state = state::AppState { quotes_service };
 
     // axum server
+    let cors = CorsLayer::new()
+        .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+        .allow_methods([Method::GET, Method::POST])
+        .allow_headers(Any);
+
     let app = Router::new()
         .nest("/quotes", routes::quote::router())
         .nest("/health", routes::health::router())
-        .with_state(app_state);
+        .with_state(app_state)
+        .layer(cors);
     let addr = format!("0.0.0.0:{}", config.port);
 
     let listener = tokio::net::TcpListener::bind(&addr)
         .await
         .unwrap_or_else(|_| panic!("Failed to bind to address: {}", addr));
 
-    println!("Server is running on {}. {}", addr, "yay");
+    println!("Server is running on {}. yay", addr);
     serve(listener, app).await.unwrap();
 
     Ok(())
